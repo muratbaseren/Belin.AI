@@ -1,0 +1,41 @@
+﻿@page "/app/{Username}/{AppName}"
+@using BelinAI.Data
+@rendermode InteractiveServer
+
+<PageTitle>@AppName</PageTitle>
+
+<div class="d-flex flex-column align-items-stretch" style="height:calc(100vh - 56px);">
+    <div class="col-12 h-100 d-flex flex-column align-items-stretch">
+        <iframe frameborder="0" srcdoc="@HtmlBody" class="h-100 w-100"></iframe>
+    </div>
+</div>
+
+<style>
+    .content{
+        padding: 0;
+    }
+</style>
+
+@code {
+    private string HtmlBody { get; set; } = string.Empty;
+    [Parameter] public string Username { get; set; } = string.Empty;
+    [Parameter] public string AppName { get; set; } = string.Empty;
+    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Username.Trim()) && !string.IsNullOrEmpty(AppName))
+        {
+            var app = DbContext.UserApps
+                .Where(app => app.Name == AppName && app.AppUser.UserName == Username)
+                .FirstOrDefault();
+
+            if (app != null)
+            {
+                HtmlBody = app.Code;
+                JS.InvokeVoidAsync("setAppAndUserName",app.Name, Username);
+            }
+        }
+    }
+}

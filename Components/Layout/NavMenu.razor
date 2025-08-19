@@ -1,0 +1,168 @@
+﻿@using BelinAI.Data
+@using BelinAI.Services
+@using Microsoft.EntityFrameworkCore.Internal
+@implements IDisposable
+@rendermode InteractiveServer
+
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@inject NotifyService NotifyService
+
+<div class="top-row ps-3 navbar navbar-dark navbar-brand-bg">
+    <div class="container-fluid">
+        <a class="navbar-brand">BELIN.AI</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column flex-nowrap justify-content-between h-100">
+        <div class="flex-grow-1 overflow-auto scroll-width-none navbar-grow-1-bg">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" Match="NavLinkMatch.All" @onclick="@(() => NavigationManager.NavigateTo("/", true))">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Nasıl Yapılır?
+                </NavLink>
+            </div>
+
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="@(() => NavigationManager.NavigateTo("/coding", true))">
+                            <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Yeni Kodlama
+                        </NavLink>
+                    </div>
+
+                    @foreach (var slug in UserAppSlugs)
+                    {
+                        <div class="nav-item px-3 code-page">
+                            <div class="d-flex justify-content-between">
+                                <NavLink class="nav-link" @onclick="@(() => NavigationManager.NavigateTo($"app/{context.User.Identity.Name}/{slug}", true))">
+                                    <span class="bi bi-code-square-nav-menu" aria-hidden="true"></span> @slug
+                                </NavLink>
+                                <button class="btn btn-sm text-white" @onclick="() => OnRemoveCodePage(slug)">
+                                    <span class="bi bi-trash me-0" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        <div>
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="/Options">
+                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ayarlar
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="/admin/users">
+                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Kullanıcı Yönetimi
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="Account/Manage">
+                            <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <form action="Account/Logout" method="post">
+                            <AntiforgeryToken />
+                            <input type="hidden" name="ReturnUrl" value="" />
+                            <button type="submit" class="nav-link">
+                                <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Çıkış
+                            </button>
+                        </form>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="Account/Register">
+                            <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Kayıt Ol
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="Account/Login">
+                            <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Giriş
+                        </NavLink>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </nav>
+</div>
+
+@code {
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] ApplicationDbContext DbContext { get; set; } = default!;
+
+    private string? currentUrl;
+    private List<string> UserAppSlugs = new();
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+
+        NotifyService.ReloadNeeded += (message) =>
+        {
+            StateHasChanged();
+        };
+
+        if (UserService.IsAuthenticatedAsync().Result)
+        {
+            LoadUserAppData();
+        }
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    private async Task LoadUserAppData()
+    {
+        var user = await UserService.GetUserNameAndIdAsync();
+        UserAppSlugs = DbContext.UserApps
+            .Where(app => app.AppUserId == user.UserId)
+            .OrderByDescending(app => app.CreatedAt)
+            .Select(app => app.Name)
+            .ToList();
+    }
+
+    private async Task OnRemoveCodePage(string slug)
+    {
+        bool result = await JS.InvokeAsync<bool>("confirm", @slug + " isimli kod sayfası silinsin mi?");
+
+        if (result)
+        {
+            var user = await UserService.GetUserNameAndIdAsync();
+
+            var codePage = DbContext.UserApps
+                .FirstOrDefault(app => app.AppUserId == user.UserId && app.Name == slug);
+
+            if (codePage != null)
+            {
+                DbContext.UserApps.Remove(codePage);
+                await DbContext.SaveChangesAsync();
+
+                // NavigationManager.NavigateTo("/");
+                NavigationManager.Refresh(true);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
+

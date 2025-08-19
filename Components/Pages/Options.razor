@@ -1,0 +1,120 @@
+﻿@page "/options"
+@attribute [Authorize(Roles = "Admin")]
+@using BelinAI.Data
+@using BelinAI.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+@inject RoleManager<IdentityRole> RoleManager
+@inject EncryptionService EncryptionService
+
+<PageTitle>Ayarlar</PageTitle>
+
+<h3>Ayarlar</h3>
+<hr>
+
+<div class="row">
+    <div class="col-md-12">
+        <EditForm Model="@FormModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label for="apiKey" class="form-label">YZ API Anahtarı</label>
+                <div class="input-group">
+                    <InputText id="apiKey" autocomplete="off" class="form-control" @bind-Value="FormModel.ApiKey"
+                               type="@(showApiKey ? "text" : "password")" />
+                    <button class="btn btn-outline-secondary" type="button" @onclick="ToggleApiKeyVisibility">
+                        <i class="bi @(showApiKey ? "bi-eye-slash" : "bi-eye")"></i>
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => FormModel.ApiKey)" />
+                <small class="text-muted">
+                    <i class="bi bi-shield-lock"></i> API anahtarı 256-bit şifreleme ile güvenli şekilde saklanır.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="endpoint" class="form-label">YZ API Url</label>
+                <InputText id="endpoint" class="form-control" autocomplete="off" @bind-Value="FormModel.Endpoint" />
+                <ValidationMessage For="@(() => FormModel.Endpoint)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="prompt" class="form-label">YZ Ön Prompt Metni</label>
+                <InputTextArea id="prompt" class="form-control" @bind-Value="FormModel.Prompt" rows="10" />
+                <ValidationMessage For="@(() => FormModel.Prompt)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private OptionsFormModel FormModel = new();
+    private bool showApiKey = false;
+
+    protected override void OnInitialized()
+    {
+        var opt = DbContext.Options.SingleOrDefault(x => x.OptId == "api");
+        if (opt != null)
+        {
+            var decryptedApiKey = EncryptionService.Decrypt(opt.ApiKey);
+            FormModel.ApiKey = string.IsNullOrEmpty(decryptedApiKey) ? opt.ApiKey : decryptedApiKey;
+            FormModel.Endpoint = opt.Endpoint;
+            FormModel.Prompt = opt.PrePrompt;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var opt = DbContext.Options.SingleOrDefault(x => x.OptId == "api");
+
+        if (opt != null)
+        {
+            opt.ApiKey = EncryptionService.Encrypt(FormModel.ApiKey);
+            opt.Endpoint = FormModel.Endpoint;
+            opt.PrePrompt = FormModel.Prompt;
+
+            DbContext.Options.Update(opt);
+        }
+        else
+        {
+            opt = new Option
+            {
+                OptId = "api",
+                ApiKey = EncryptionService.Encrypt(FormModel.ApiKey),
+                Endpoint = FormModel.Endpoint,
+                PrePrompt = FormModel.Prompt
+            };
+
+            DbContext.Options.Add(opt);
+        }
+
+        await DbContext.SaveChangesAsync();
+        await JS.InvokeVoidAsync("alert", "Ayarlar başarıyla kaydedildi ve şifrelendi.");
+    }
+
+    private void ToggleApiKeyVisibility()
+    {
+        showApiKey = !showApiKey;
+    }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+
+
+    public class OptionsFormModel
+    {
+        [Required(ErrorMessage = "YZ API Anahtarı zorunludur.")]
+        public string ApiKey { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "YZ API Url zorunludur.")]
+        public string Endpoint { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "YZ Ön Prompt Metni zorunludur.")]
+        public string Prompt { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/Account/Manage/PersonalData"
+
+@inject IdentityUserAccessor UserAccessor
+
+<PageTitle>Kişisel Veri</PageTitle>
+
+<StatusMessage />
+<h1 class="d-flex align-items-center gap-2 mb-3 heading-sub-title">
+    <i class="bi bi-database"></i> Kişisel Veri
+</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Hesabınız, bize verdiğiniz kişisel verileri içermektedir. Bu sayfa, söz konusu verileri indirmenize veya silmenize olanak tanır.</p>
+        <p>
+            <strong>Bu verileri silmek hesabınızı kalıcı olarak silecektir ve bu verilerin kurtarılması mümkün olmayacaktır.</strong>
+        </p>
+        <form action="Account/Manage/DownloadPersonalData" method="post">
+            <AntiforgeryToken />
+            <button class="btn btn-primary" type="submit">
+                <span class="bi bi-download"></span> İndir
+            </button>
+            <a href="Account/Manage/DeletePersonalData" class="btn btn-danger ms-3">
+                <span class="bi bi-trash"></span> Tüm Verilerimi Sil
+            </a>
+        </form>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    }
+}

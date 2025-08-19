@@ -1,0 +1,161 @@
+@page "/Account/Manage/AIOptions"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using BelinAI.Data
+@using BelinAI.Services
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject IdentityRedirectManager RedirectManager
+@inject EncryptionService EncryptionService
+@inject IJSRuntime JS
+
+<PageTitle>Yapay Zeka Ayarlarý</PageTitle>
+
+<h3>Yapay Zeka Ayarlarý</h3>
+
+<StatusMessage Message="@message" IsError="@hasError" />
+
+<div class="row">
+    <div class="col-md-8">
+        <EditForm Model="Input" FormName="ai-options" OnValidSubmit="OnValidSubmitAsync" method="post">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.YzApiUrl" class="form-control" autocomplete="off" placeholder="Yapay Zeka API URL'si" />
+                <label class="form-label">YZ API URL</label>
+                <ValidationMessage For="() => Input.YzApiUrl" class="text-danger" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="YzApiKey" class="form-label">YZ API Anahtarý</label>
+                <div class="input-group">
+                    <InputText @bind-Value="Input.YzApiKey" class="form-control" id="apiKeyInput"
+                               autocomplete="off" placeholder="Yapay Zeka API Anahtarý" 
+                               type="password" />
+                    <button class="btn btn-outline-secondary" type="button" id="toggleApiKeyBtn">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+                <ValidationMessage For="() => Input.YzApiKey" class="text-danger" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Ayarlarý Güncelle</button>
+        </EditForm>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle"></i> Bilgilendirme</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <strong>YZ API URL:</strong> Yapay zeka servisinizin endpoint URL'si.<br/>
+                    <small class="text-muted">Örnek: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=</small>
+                </p>
+                <p class="card-text">
+                    <strong>YZ API Anahtarý:</strong> Yapay zeka servisiniz için gerekli API anahtarý.
+                </p>
+                <div class="alert alert-success" role="alert">
+                    <small>
+                        <i class="bi bi-shield-lock"></i> <strong>Güvenlik:</strong> API anahtarýnýz <strong>256-bit þifreleme</strong> ile güvenli þekilde saklanýr ve sadece sizin kodlama iþlemlerinizde kullanýlýr.
+                    </small>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(user?.YzApiKey))
+                {
+                    <div class="alert alert-info" role="alert">
+                        <small>
+                            <i class="bi bi-check-circle"></i> <strong>Durum:</strong> API anahtarýnýz kayýtlý ve þifrelenmiþ olarak saklanýyor.
+                        </small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.initializePasswordToggle = () => {
+        const toggleBtn = document.getElementById('toggleApiKeyBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (toggleBtn && apiKeyInput && eyeIcon) {
+            toggleBtn.addEventListener('click', function() {
+                if (apiKeyInput.type === 'password') {
+                    apiKeyInput.type = 'text';
+                    eyeIcon.className = 'bi bi-eye-slash';
+                } else {
+                    apiKeyInput.type = 'password';
+                    eyeIcon.className = 'bi bi-eye';
+                }
+            });
+        }
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        window.initializePasswordToggle();
+    });
+</script>
+
+@code {
+    private ApplicationUser user = default!;
+    private string? message;
+    private bool hasError = false;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm(FormName = "ai-options")]
+    private InputModel Input { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        
+        Input.YzApiUrl ??= user.YzApiUrl;
+        
+        if (!string.IsNullOrEmpty(user.YzApiKey))
+        {
+            var decryptedKey = EncryptionService.Decrypt(user.YzApiKey);
+            Input.YzApiKey ??= string.IsNullOrEmpty(decryptedKey) ? "" : decryptedKey;
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        user.YzApiUrl = Input.YzApiUrl;
+        
+        if (!string.IsNullOrEmpty(Input.YzApiKey))
+        {
+            user.YzApiKey = EncryptionService.Encrypt(Input.YzApiKey);
+        }
+        else
+        {
+            user.YzApiKey = null;
+        }
+
+        var updateResult = await UserManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            hasError = true;    
+            message = "Hata: Ayarlar güncellenirken bir hata oluþtu.";
+            return;
+        }
+
+        hasError = false;
+        message = "Yapay Zeka ayarlarýnýz baþarýyla güncellendi ve þifrelenerek kaydedildi.";
+    }
+
+    private sealed class InputModel
+    {
+        [Display(Name = "YZ API URL")]
+        public string? YzApiUrl { get; set; }
+
+        [Display(Name = "YZ API Anahtarý")]
+        public string? YzApiKey { get; set; }
+    }
+}

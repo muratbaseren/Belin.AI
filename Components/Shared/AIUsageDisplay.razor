@@ -1,0 +1,57 @@
+@using BelinAI.Services
+@using BelinAI.Data
+@inject UserService UserService
+@inject NotifyService NotifyService
+@implements IDisposable
+
+<AuthorizeView>
+    <Authorized>
+        <a href="/Account/Manage/AIOptions">
+            Kalan Kullaným : <span>@aiUseCount</span>&nbsp;
+            @if(aiUseCount != "Limitsiz")
+            {
+                @:/ 10
+            }
+        </a>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string aiUseCount = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserData();
+
+        NotifyService.ReloadNeeded += OnReloadNeeded;
+    }
+
+    private async Task LoadUserData()
+    {
+        var currentUser = await UserService.GetCurrentUserAsync();
+        if (currentUser != null)
+        {
+            aiUseCount = currentUser.AIUseCount.ToString();
+
+            if(currentUser.UseAppAI)
+            {
+                aiUseCount = "Limitsiz";
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private async void OnReloadNeeded(string message)
+    {
+        if (message == "AI kullaným sayýsý güncellendi")
+        {
+            await LoadUserData();
+        }
+    }
+
+    public void Dispose()
+    {
+        NotifyService.ReloadNeeded -= OnReloadNeeded;
+    }
+}

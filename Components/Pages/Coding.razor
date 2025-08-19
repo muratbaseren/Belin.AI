@@ -1,0 +1,350 @@
+﻿@page "/coding"
+@rendermode InteractiveServer
+@using System.Text.Json
+@using BelinAI.Data
+@using BelinAI.Services
+@using Microsoft.AspNetCore.Identity
+@using Slugify
+
+
+@inject UserService UserService
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+@inject NotifyService NotifyService
+@inject EncryptionService EncryptionService
+
+<PageTitle>Yeni Kodlama</PageTitle>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="d-flex align-items-center gap-2 mb-3 heading-title">
+            <i class="bi bi-code-slash"></i> Yeni Kodlama
+        </h1>
+    </div>
+</div>
+
+<style>
+
+
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="chat-container d-flex flex-column">
+            <div class="chat-messages flex-grow-1 mb-3">
+                @if (!showLoader && (Messages == null || Messages.Count == 0))
+                {
+                    <EmptySectionView Icon="bi bi-chat text-secondary">
+                        Sohbete başlamak için bir mesaj yazın.
+                    </EmptySectionView>
+                }
+
+                @foreach (var message in Messages)
+                {
+                    <div class="d-flex mb-2 @(message.IsUser ? "justify-content-end" : "justify-content-start")">
+                        <div class="chat-bubble p-2" style="background: @(message.IsUser ? "#e3f2fd" : "#f5f2f0")">
+                            <div class="d-flex flex-column">
+                                <div>
+                                    @if (!message.IsUser)
+                                    {
+                                        <details>
+                                            <summary class="text-secondary">
+                                                Yapay Zeka Yanıtı :  Kodları görmek için tıklayabilirsiniz.
+                                            </summary>
+                                            <div>
+                                                <div class="text-secondary small my-2">Bu yanıt yapay zeka tarafından oluşturulmuştur.</div>
+                                                <pre class="system"><code class="language-html">@message.Text</code></pre>
+                                            </div>
+                                        </details>
+                                    }
+                                    else
+                                    {
+                                        <div class="user">@message.Text</div>
+                                    }
+                                </div>
+                                <div class="chat-bubble-buttons mt-2 d-flex justify-content-end">
+                                    @if (!message.IsUser)
+                                    {
+                                        <button class="btn btn-sm btn-success p-1 play-btn" @onclick="() => CopyToHtmlViewer(message.Text)">
+                                            <span class="bi bi-play"></span> Çalıştır
+                                        </button>
+                                    }
+                                    <button class="btn btn-sm btn-warning ms-1 p-1 copy-btn" @onclick="() => CopyToClipboard(message.Text)">
+                                        <span class="bi bi-clipboard"></span> Kopyala
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (showLoader)
+                {
+                    <Loader />
+                }
+            </div>
+            <div class="chat-input d-flex">
+                <textarea id="txtUserInput" class="form-control me-2" rows="3" placeholder="Burada yapmak istediğiniz uygulamayı anlatınız." @bind="UserInput"
+                          @onkeydown="HandleInputKeyDown"></textarea>
+                <button class="btn btn-primary" @onclick="SendMessageAsync" title="Gönder">
+                    <span class="bi bi-send"></span> <span class="d-none d-sm-block">Gönder<br /><span style="font-size:7pt">CTRL+Enter</span></span>
+                </button>
+            </div>
+            <div class="mt-2">
+                <button class="btn btn-secondary btn-sm me-2" @onclick="WriteHafizaOyunuPrompt"><span class="bi bi-bookmark"></span> Hafıza Oyunu Talebi</button>
+                <button class="btn btn-secondary btn-sm me-2" @onclick="WriteAnimasyonluKutuPrompt"><span class="bi bi-bookmark"></span> Animasyonlu Kutu</button>
+            </div>
+        </div>
+        <div>
+            <AlertView>
+                Bu sayfayı kapatırsanız kodlara erişiminiz olmayacaktır. Ama üzülmeyin <a @onclick="@(() => NavigationManager.NavigateTo("coding", true))"><b>Yeni Kodlama</b></a> düğmesi ile yeniden yapay zeka ya kod yazdırabilirsiniz.
+            </AlertView>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="d-flex flex-column">
+            <div class="html-preview">
+                <iframe frameborder="0" srcdoc="@HtmlBody" width="100%" height="100%"></iframe>
+            </div>
+            <div class="d-flex justify-content-between mt-2">
+                <div class="d-flex flex-grow-1 justify-content-between">
+                    <input type="text" class="form-control" @bind="AppName" @onblur="SlugifyAppName" placeholder="Uygulama adı girin. Örn; Hafıza Oyunu" />
+                    <button class="btn btn-success ms-2 w-25" @onclick="PublishApp" title="Yayınla">
+                        <span class="bi bi-upload"></span> <span class="d-none d-sm-block">Yayınla</span>
+                    </button>
+                </div>
+                <button class="btn btn-danger ms-4" @onclick="() => HtmlBody = string.Empty">
+                    <span class="bi bi-eraser"></span> <span class="d-none d-sm-block">Kodları Temizle</span>
+                </button>
+            </div>
+            <div class="mt-2 mx-2">
+                <NoticeView>
+                    Burada belirttiğiniz isim uygulamanızın hem adı hem de web sayfası adresindeki ismi olacaktır. Örneğin; <b>hafiza-oyunu</b> yazarsanız, yayınlama sonrası uygulamanızın web adresi <b>/app/@UserService.GetUserNameAsync().Result/hafiza-oyunu</b> olacaktır.
+                </NoticeView>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private string UserInput { get; set; } = string.Empty;
+    private string AppName { get; set; } = string.Empty;
+    private string HtmlBody { get; set; } = string.Empty;
+    private bool showLoader { get; set; } = false;
+    private List<ChatMessage> Messages { get; set; } = new();
+
+
+    private async Task SendMessageAsync()
+    {
+        showLoader = true;
+        StateHasChanged();
+        await JS.InvokeVoidAsync("setScrollToBottom", ".chat-messages");
+        Task.Delay(3000).Wait();
+
+        if (!string.IsNullOrWhiteSpace(UserInput))
+        {
+            var formattedInput = UserInput.Replace("\r\n", "<br>").Replace("\n", "<br>").Replace("\r", "<br>");
+            Messages.Add(new ChatMessage { Text = formattedInput, IsUser = true });
+
+            var aiResponseText = await GetGeminiResponseAsync(UserInput);
+
+            Messages.Add(new ChatMessage { Text = await BeautifyHtmlAsync(aiResponseText), IsUser = false });
+            UserInput = string.Empty;
+        }
+
+        showLoader = false;
+        StateHasChanged();
+
+        await JS.InvokeVoidAsync("setTimeout", "Prism.highlightAll()", 100);
+    }
+
+    private async Task HandleInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.CtrlKey && e.Key == "Enter")
+        {
+            await JS.InvokeVoidAsync("blurActiveElement");
+            await SendMessageAsync();
+            await JS.InvokeVoidAsync("focusElement", "#txtUserInput");
+            await JS.InvokeVoidAsync("setScrollToBottom", ".chat-messages");
+        }
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
+    private async Task CopyToHtmlViewer(string text)
+    {
+        HtmlBody = text;
+    }
+
+    private async Task<string> GetGeminiResponseAsync(string prompt)
+    {
+        var currentUser = await UserService.GetCurrentUserAsync();
+
+        string apiKey = string.Empty;
+        string endpoint = string.Empty;
+        string prePrompt = "Belirttiğim uygulamayı sadece HTML,CSS ve JS içeren şekilde bir kod üret, herhangi bir açıklama satırı ekleme ve sadece kodu yanıt olarak döndür.";
+
+        if (currentUser != null && !string.IsNullOrEmpty(currentUser.YzApiKey) && !string.IsNullOrEmpty(currentUser.YzApiUrl))
+        {
+            var decryptedApiKey = EncryptionService.Decrypt(currentUser.YzApiKey);
+
+            if (!string.IsNullOrEmpty(decryptedApiKey))
+            {
+                apiKey = decryptedApiKey;
+                endpoint = currentUser.YzApiUrl + apiKey;
+                prompt = prePrompt + "\n\n" + prompt;
+            }
+            else
+            {
+                return "Hata : Şifrelenmiş API anahtarınız çözülemedi";
+            }
+        }
+        else
+        {
+            if (currentUser.AIUseCount != 0 || currentUser.UseAppAI)
+            {
+                var apiOptions = DbContext.Options.SingleOrDefault(x => x.OptId == "api");
+                if (apiOptions != null)
+                {
+                    var decryptedGlobalApiKey = EncryptionService.Decrypt(apiOptions.ApiKey);
+                    if (!string.IsNullOrEmpty(decryptedGlobalApiKey))
+                    {
+                        apiKey = decryptedGlobalApiKey;
+                    }
+                    else
+                    {
+                        apiKey = apiOptions.ApiKey;
+                    }
+                    
+                    endpoint = apiOptions.Endpoint + apiKey;
+                    prompt = apiOptions.PrePrompt + "\n\n" + prompt;
+
+                    if (!currentUser.UseAppAI)
+                    {
+                        currentUser.AIUseCount--;
+                        await UserManager.UpdateAsync(currentUser);
+                    }
+                }
+                else
+                {
+                    return "Hata : Yapay Zeka ayarları yapılmamış! Lütfen 'Hesabım > Yapay Zeka' bölümünden kendi API ayarlarını tanımlayın.";
+                }
+            }
+            else
+            {
+                return "Hata : Yapay Zeka kullanım hakkınız tükenmiş! Lütfen 'Hesabım > Yapay Zeka' bölümünden kendi API ayarlarını tanımlayın.";
+            }
+        }
+
+        var requestBody = new
+        {
+            contents = new[]
+            {
+                new
+                {
+                    parts = new[]
+                    {
+                        new { text = prompt }
+                    }
+                }
+            }
+        };
+
+        using var httpClient = new HttpClient();
+        var response = await httpClient.PostAsJsonAsync(endpoint, requestBody);
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var text = json
+                .GetProperty("candidates")[0]
+                .GetProperty("content")
+                .GetProperty("parts")[0]
+                .GetProperty("text")
+                .GetString();
+
+            // Extract <html>...</html> block from text, similar to the JS example
+            var htmlMatch = System.Text.RegularExpressions.Regex.Match(text ?? string.Empty, "<html[\\s\\S]*?</html>", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            text = htmlMatch.Success ? htmlMatch.Value : text;
+
+            return text ?? string.Empty;
+        }
+
+        return "Hata : Yapay Zeka Hatası.";
+    }
+
+    private async Task<string> BeautifyHtmlAsync(string html)
+    {
+        var options = new { indent_size = 2 };
+        return await JS.InvokeAsync<string>("beautifyHtml", html, options);
+    }
+
+    private void SlugifyAppName()
+    {
+        AppName = SlugfyService.Slugfy(AppName);
+    }
+
+    private async Task PublishApp()
+    {
+        if (string.IsNullOrWhiteSpace(HtmlBody))
+        {
+            await JS.InvokeVoidAsync("alert", "Lütfen önce kodları yazdırın.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(AppName))
+        {
+            await JS.InvokeVoidAsync("alert", "Lütfen uygulama adını girin.");
+            return;
+        }
+
+        UserApp userApp = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = AppName,
+            Code = HtmlBody,
+            CreatedAt = DateTime.UtcNow,
+            AppUserId = await UserService.GetUserIdAsync(),
+        };
+
+        DbContext.UserApps.Add(userApp);
+        if ((await DbContext.SaveChangesAsync()) > 0)
+        {
+            await JS.InvokeVoidAsync("alert", "Uygulama başarıyla yayınlandı.");
+            var result = await JS.InvokeAsync<bool>("confirm", "Yayınlanan proje bu sayfada açılsın mı? Not : 'Tamam' derseniz, bu sayfadaki konuşmaları kaybedeceksiniz. Ama üzülmeyin, 'İptal' seçerek, konuşmalarından kopyalamak istediklerini 'Kopyala' düğmesi ile kopyalayabilirsin ve projeyi yeni sayfada açabilirsin. :)");
+
+            if (result)
+            {
+                NavigationManager.NavigateTo($"/app/{await UserService.GetUserNameAsync()}/{AppName}", true);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("open", $"/app/{await UserService.GetUserNameAsync()}/{AppName}", "_blank");
+            }
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Uygulama yayınlanırken bir hata oluştu.");
+        }
+    }
+
+    private void WriteHafizaOyunuPrompt()
+    {
+        UserInput = "Bana basit bir hafıza oyunu yapar mısın? Kartların dönmesi animasyonlu olsun. Gölge efektleri de kullan. Ekranın yatay ve dikey ortasında 16 kart kadar olsun. Her satır da 4 kart olsun. 2 kişi oynana bilsin. Oyuncu1 ve Oyuncu2 olarak isimleri göster.Sıra kim de ise isminin etrafını renklendirerek belli et. Skor göster ve kazananı da göster. Sonuçları sakla bir sonraki oyunu tekrar açtığımda önceki skor u da ekranın sağ üstünde göster.";
+    }
+
+    private void WriteAnimasyonluKutuPrompt()
+    {
+        UserInput = "Bana animasyonlu bir kutu yapmanı istiyorum. Kutuya basıldığında farklı yerlere animasyonlu şekilde hareket etsin ve renk değiştirsin. Gölge efekti de ekle.";
+    }
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+
+    private class ChatMessage
+    {
+        public string Text { get; set; } = string.Empty;
+        public bool IsUser { get; set; }
+    }
+}

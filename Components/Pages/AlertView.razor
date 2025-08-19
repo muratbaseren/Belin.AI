@@ -1,0 +1,13 @@
+﻿<p class="small alert alert-@Type mt-2">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <span class="@Icon"></span>
+    }
+    @ChildContent
+</p>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "bi bi-exclamation-diamond-fill";
+    [Parameter] public string Type { get; set; } = "danger";
+    [Parameter] public RenderFragment ChildContent { get; set; }
+}

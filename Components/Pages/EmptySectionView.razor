@@ -1,0 +1,12 @@
+﻿<div class="d-flex h-100 flex-column align-items-center justify-content-center text-muted">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <span class="@Icon"></span>
+    }
+    <span>@ChildContent</span>
+</div>
+
+@code {
+    [Parameter] public string Icon { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+}

@@ -1,0 +1,13 @@
+﻿<p class="text-@TextColor small">
+    @if (!string.IsNullOrWhiteSpace(Icon))
+    {
+        <span class="@Icon"></span>
+    }
+    @ChildContent
+</p>
+
+@code {
+    [Parameter] public string Icon { get; set; } = "bi bi-info-circle-fill";
+    [Parameter] public string TextColor { get; set; } = "danger";
+    [Parameter] public RenderFragment ChildContent { get; set; }
+}

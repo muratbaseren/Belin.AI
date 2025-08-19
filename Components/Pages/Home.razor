@@ -1,0 +1,208 @@
+﻿@page "/"
+@using BelinAI.Services
+
+@inject UserService UserService
+
+<PageTitle>BelinAI - Yapay Zeka ile Kod Yazdır</PageTitle>
+
+<section class="hero-section">
+    <div class="hero-header">
+        <h1>🧠 Kod Yazdır, Eğlen, Yayınla!</h1>
+        <p>Tek bir satır kod yazmana gerek kalmadan, eğlenerek HTML, CSS, JavaScript ile uygulama geliştir. 🤩 Üstelik her şey yapay zekâ destekli! Bırak yapay zeka senin için kod yazsın. 🤩</p>
+        
+        <div class="pricing-info">
+            <div class="free-tier">
+                <span class="badge bg-success">🎁 Ücretsiz Başlangıç</span>
+                <p>Her yeni kullanıcı <strong>10 ücretsiz AI kullanım hakkı</strong> ile başlar!</p>
+            </div>
+        </div>
+        
+        <a href="/Account/Register" class="cta-button">🚀 Hemen Başla</a>
+    </div>
+
+    <div class="feature-cards">
+        <div class="feature-card">
+            <h5>🤖 Sohbetle Kodlama</h5>
+            <p>Yapay zekaya sadece ne yapmak istediğini söyle, kodu o yazsın. Teknik terim yok, karmaşa yok.</p>
+        </div>
+        <div class="feature-card">
+            <h5>🔍 Anında Önizleme</h5>
+            <p>Kodun neye benzediğini hemen gör. Deneme yap, değiştir, geliştir... Sonucu anında test et!</p>
+        </div>
+        <div class="feature-card">
+            <h5>🌍 Yayınla ve Paylaş</h5>
+            <p>Uygulamana bir isim ver, yayına al. Kendi URL'inle paylaş: <code>/app/@(UserService.GetUserNameAsync().GetAwaiter().GetResult() ?? "kullanici-adi")/uygulama-adi</code></p>
+        </div>
+        <div class="feature-card unlimited-ai">
+            <h5>🚀 Limitsiz Kullanım</h5>
+            <p><strong>Kendi Gemini AI API anahtarınızla</strong> limitsiz kod üretebilirsiniz!</p>
+            <AuthorizeView>
+                <Authorized>
+                    <a href="/Account/Manage/AIOptions" class="api-setup-link">⚙️ API Ayarlarım</a>
+                </Authorized>
+                <NotAuthorized>
+                    <small class="text-muted">Google AI Studio üzerinden (<a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>) ücretsiz Gemini API anahtarınızı alabilirsiniz.</small>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <div class="hero-footer">
+        <h2>🗂 Tüm Kodların Seninle</h2>
+        <p><b>Kayıt</b> ol, Hesabına <b>giriş</b> yap, <b>Yeni Kodlama</b> sayfasına git ve konuşarak kod yazdır, kodunu <b>yayınla</b>, tüm uygulamalarına ulaş. <br><em>Kod arşivin artık cebinde!</em></p>
+        <a href="/Account/Login" class="secondary-button">🔐 Giriş Yap</a>
+    </div>
+</section>
+
+<section class="who-for-section">
+    <div class="who-for-header">
+        <h2>🎓 Kimler İçin?</h2>
+    </div>
+
+    <div class="who-for-cards">
+        <div class="who-for-card">
+            <h5>👶 Yeni Başlayanlar</h5>
+            <p>Yazılım terimlerini bilmeden yapay zekayla uygulama geliştirmeye başlangıç.</p>
+        </div>
+        <div class="who-for-card">
+            <h5>🧑‍🏫 Öğrenciler</h5>
+            <p>Projelerini kolayca oluşturup öğretmenleriyle paylaşmak isteyenler.</p>
+        </div>
+        <div class="who-for-card">
+            <h5>🎨 Tasarımcılar</h5>
+            <p>Tasarımlarını canlı hale getirmenin basit bir yolu.</p>
+        </div>
+        <div class="who-for-card">
+            <h5>🧪 Meraklılar</h5>
+            <p>"Bu nasıl yapılır?" diyerek öğrenmeye doyamayanlar için.</p>
+        </div>
+    </div>
+</section>
+
+<section class="faq-container">
+    <div class="faq-header">
+        <h2>💬 Sıkça Sorulan Sorular</h2>
+    </div>
+
+    <div class="faq-list">
+        <details>
+            <summary>
+                <span>Kod bilmiyorum. Gerçekten yapabilir miyim?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Kesinlikle! Yapay zekâya ne yapmak istediğini söyle, gerisini o halleder. Sanki "kanka bana bir hafıza oyunu yapsana" demek gibi 😄
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Ücretsiz kullanım hakkım biterse ne olur?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Her yeni kullanıcı 10 ücretsiz AI kullanım hakkı ile başlar. Bu hakkınız bittiğinde <strong>kendi Google Gemini AI API anahtarınızı</strong> hesap ayarlarından tanımlayarak limitsiz kullanabilirsiniz. API anahtarı ücretsiz alınabilir!
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Gemini AI API anahtarını nasıl alabilirim?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Google AI Studio üzerinden (<a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>) ücretsiz Gemini API anahtarınızı alabilirsiniz. Anahtarınızı aldıktan sonra <strong>"Hesabım > Yapay Zeka"</strong> bölümünden tanımlayın ve limitsiz kullanım keyfini çıkarın! 🚀
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Peki ya kodu düzenlemek istersem?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Kodu yapay zekaya istediğiniz kadar yazdırtabilirsiniz. Yazılım bilgisi olmayanlar için olduğundan düzenleme yerine bol bol konuşarak doğru sonuca ulaşabilirsiniz. Sonuçta senin uygulaman! 😎
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Uygulamalarımı kimler görebilir?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Paylaşmadıkça kimse göremez. Ama istersen kendi arkadaş çevrende "Benim ilk hafıza oyunu uygulamam!" diye havanı da atabilirsin. 😎
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Hangi programlama dilleri destekleniyor?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Şu anda <strong>HTML, CSS ve JavaScript</strong> ile web uygulamaları oluşturabilirsiniz. Oyunlardan hesap makinelerine, interaktif sayfalardan animasyonlara kadar her türlü web projesi yapabilirsiniz!
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Verilerim güvende mi?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Elbette! Kodlarınız sadece size aittir. API anahtarlarınız şifrelenmiş olarak saklanır ve sadece sizin projelerinizde kullanılır. Kimse başka kimsenin kodlarını göremez.
+            </p>
+        </details>
+    </div>
+</section>
+
+<style>
+.pricing-info {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.free-tier {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem auto;
+    max-width: 400px;
+}
+
+.free-tier .badge {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.free-tier p {
+    margin: 0.5rem 0 0 0;
+    color: #155724;
+    font-size: 1rem;
+}
+
+.feature-card.unlimited-ai {
+    border: 2px solid #ffc107;
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+}
+
+.api-setup-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.8rem;
+    background: #ffc107;
+    color: #212529;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.api-setup-link:hover {
+    background: #e0a800;
+    text-decoration: none;
+    color: #212529;
+}
+</style>

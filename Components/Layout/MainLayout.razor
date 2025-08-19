@@ -1,0 +1,31 @@
+﻿@using BelinAI.Components.Shared
+@using BelinAI.Services
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row d-flex justify-content-between">
+            <div>
+                <b id="app-user-name"></b>
+            </div>
+            <div>
+                <AIUsageDisplay />
+                <a href="https://about.me/KadirMuratBaseren" target="_blank">Design by</a>
+            </div>
+        </div>
+
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    Beklenmedik bir hata oluştu.
+    <a href="." class="reload">Yeniden Yükle</a>
+    <span class="dismiss">🗙</span>
+</div>
