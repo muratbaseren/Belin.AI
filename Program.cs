@@ -112,6 +112,32 @@ namespace BelinAI
                         await roleManager.CreateAsync(new IdentityRole(role));
                     }
                 }
+
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var adminUser = await userManager.FindByEmailAsync(app.Configuration["AdminSettings:AdminEmail"]);
+
+                if (adminUser == null)
+                {
+                    adminUser = new ApplicationUser
+                    {
+                        UserName = "BelinAI_Admin",
+                        Email = app.Configuration["AdminSettings:AdminEmail"],
+                        EmailConfirmed = true,
+                        UseAppAI = true,
+                        AIUseCount = 9999,
+                    };
+
+                    var resultUserCreate = await userManager.CreateAsync(adminUser, app.Configuration["AdminSettings:AdminPassword"]);
+
+                    if (resultUserCreate.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
+                    else
+                    {
+                        throw new Exception(string.Join("\n", resultUserCreate.Errors.Select(x => x.Description)));
+                    }
+                }
             }
 
             app.Run();

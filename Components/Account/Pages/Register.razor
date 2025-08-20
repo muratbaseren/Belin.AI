@@ -21,7 +21,7 @@
 
 <div class="row d-flex align-items-center justify-content-center" style="height:800px">
     <div class="col-lg-4">
-        <StatusMessage Message="@Message" />
+        <StatusMessage Message="@Message" IsError="@hasError" />
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
             <DataAnnotationsValidator />
             <h2 class="text-center">Yeni Hesap Oluştur</h2>
@@ -54,6 +54,7 @@
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
+    private bool hasError = false;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -65,6 +66,8 @@
 
     public async Task RegisterUser(EditContext editContext)
     {
+        hasError = false;
+
         var user = CreateUser();
         user.UseAppAI = false;
         user.AIUseCount = 10;
@@ -77,6 +80,7 @@
 
         if (!result.Succeeded)
         {
+            hasError = true;
             identityErrors = result.Errors;
             return;
         }
@@ -91,22 +95,21 @@
             Logger.LogInformation($"Kullanıcı admin olarak ayarlandı({Input.Email}).");
         }
 
+        // var userId = await UserManager.GetUserIdAsync(user);
+        // var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        // code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        // var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+        //     NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+        //     new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+        // await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
-
-        if (UserManager.Options.SignIn.RequireConfirmedAccount)
-        {
-            RedirectManager.RedirectTo(
-                "Account/RegisterConfirmation",
-                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
-        }
+        // if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        // {
+        //     RedirectManager.RedirectTo(
+        //         "Account/RegisterConfirmation",
+        //         new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
+        // }
 
         await SignInManager.SignInAsync(user, isPersistent: false);
         RedirectManager.RedirectTo(ReturnUrl);
