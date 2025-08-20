@@ -200,7 +200,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 - **Geliştirici**: Murat Başeren
 - **Website**: [about.me/KadirMuratBaseren](https://about.me/KadirMuratBaseren)
-- **Demo**: [BelinAI Demo](your-demo-url)
+- **Demo**: [BelinAI Demo](https://belinai.azurewebsites.net/)
 
 ## 🎯 Roadmap
 
