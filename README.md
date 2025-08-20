@@ -97,7 +97,7 @@ https://localhost:5174
 ```
 
 ### İlk Admin Kullanıcısı
-Kayıt olurken `xxx@gmail.com` email adresi ile kayıt olan kullanıcı otomatik olarak admin rolü alır.
+Proje başlangıcında otomatik olarak `appsettings.json` dosyasında `AdminSettings/AdminEmail` altında tanımlı email adresi kayıt edilerek admin rolü alır. Otomatik oluşturulma da geçerli varsayılan email ve şifre `appsettings.json` dosyasındadır. Eğer otomatik oluşturma iptal edilirse, kayıt sayfasında oluşturulan kullanıcı `appsettings.json` dosyasındaki `AdminSettings/AdminEmail` tanımındaki email ile aynı ise yine admin rolünü otomatik alır (Değiştirmek ya da kaldırmak için `Register.razor` 'ı kontrol ediniz).
 
 ## 🔧 Yapılandırma
 
