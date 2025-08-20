@@ -1,6 +1,15 @@
 ﻿# 🧠 BelinAI - Yapay Zeka ile Kod Yaz, Önizle, Yayınla!
 
-BelinAI, yapay zeka destekli bir kod üretim platformudur. Kullanıcılar hiç programlama bilgisi olmadan, doğal dil ile konuşarak HTML, CSS ve JavaScript uygulamaları oluşturabilir.
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![.NET 9](https://img.shields.io/badge/.NET-9-purple.svg)](https://dotnet.microsoft.com/)
+[![Blazor Server](https://img.shields.io/badge/Blazor-Server-blue.svg)](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+[![Open Source](https://img.shields.io/badge/Open%20Source-❤️-red.svg)](https://github.com/muratbaseren/Belin.AI)
+
+BelinAI, **tamamen açık kaynaklı** bir yapay zeka destekli kod üretim platformudur. Kullanıcılar hiç programlama bilgisi olmadan, doğal dil ile konuşarak HTML, CSS ve JavaScript uygulamaları oluşturabilir.
+
+🌟 **Bu proje topluluk odaklıdır! Katkılarınızı bekliyoruz.** 🌟
+
+> **💡 Proje Hikayesi**: Bu uygulama, geliştiricinin kızının yapay zeka ile kod üretirken yaşadığı "kod üret → başka platforma taşı → editör karmaşası" sorunlarını çözmek için hızlıca geliştirilmiştir. Şimdi herkesın kullanımına açık!
 
 ## 🚀 Özellikler
 
@@ -72,8 +81,8 @@ Option {
 
 1. **Projeyi klonlayın**
 ```bash
-git clone https://github.com/kullanici-adi/BelinAI.git
-cd BelinAI
+git clone https://github.com/muratbaseren/Belin.AI.git
+cd Belin.AI
 ```
 
 2. **Bağımlılıkları yükleyin**
@@ -186,26 +195,77 @@ ENTRYPOINT ["dotnet", "BelinAI.dll"]
 
 ## 🤝 Katkıda Bulunma
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request oluşturun
+**BelinAI açık kaynaklı bir projedir ve topluluktan gelen katkıları büyük bir memnuniyetle karşılar!** 
+
+### 🌟 Nasıl Katkıda Bulunabilirsiniz?
+
+#### 💻 Kod Katkısı
+1. **Projeyi fork edin**: [github.com/muratbaseren/Belin.AI](https://github.com/muratbaseren/Belin.AI)
+2. **Feature branch oluşturun**: `git checkout -b feature/amazing-feature`
+3. **Değişikliklerinizi commit edin**: `git commit -m 'Add amazing feature'`
+4. **Branch'inizi push edin**: `git push origin feature/amazing-feature`
+5. **Pull Request oluşturun**
+
+#### 🐛 Hata Bildirimi
+- [GitHub Issues](https://github.com/muratbaseren/Belin.AI/issues) üzerinden hata bildirebilirsiniz
+- Hata raporunda mümkün olduğunca detay verin
+- Ekran görüntüleri ve hata mesajları ekleyin
+
+#### 💡 Özellik Önerisi
+- Yeni özellik önerilerinizi GitHub Issues'da paylaşabilirsiniz
+- Önerinizi detaylandırın ve kullanım senaryolarını açıklayın
+
+#### 📚 Dokümantasyon
+- README dosyasını iyileştirebilirsiniz
+- Kod içi yorumları geliştirebilirsiniz
+- Kullanım kılavuzları yazabilirsiniz
+
+#### 🌍 Çeviri
+- Uygulamayı farklı dillere çevirebilirsiniz
+- Arayüz metinlerini çevirmenize yardımcı olabiliriz
+
+### 🚀 Geliştirme Ortamı Kurulumu
+```bash
+# Projeyi klonlayın
+git clone https://github.com/muratbaseren/Belin.AI.git
+cd Belin.AI
+
+# Bağımlılıkları yükleyin
+dotnet restore
+
+# Veritabanını güncelleyin
+dotnet ef database update
+
+# Geliştirme sunucusunu başlatın
+dotnet run
+```
+
+### 📋 Katkı Kuralları
+- Kod standartlarına uyun (.NET conventions)
+- Commit mesajlarını açıklayıcı yazın
+- Pull request'inizi detaylandırın
+- Test ettiğinizden emin olun
+
+### 🏆 Katkıda Bulunanlar
+Projeye katkıda bulunan herkese teşekkür ederiz! Katkılarınız [CONTRIBUTORS.md](CONTRIBUTORS.md) dosyasında listelenir.
 
 ## 📝 Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+
+**MIT Lisansı** - Ticari ve kişisel kullanım için ücretsiz, değiştirme ve dağıtma serbestisi
 
 ## 📞 İletişim
 
 - **Geliştirici**: Murat Başeren
+- **GitHub**: [github.com/muratbaseren](https://github.com/muratbaseren)
 - **Website**: [about.me/KadirMuratBaseren](https://about.me/KadirMuratBaseren)
-- **Demo**: [BelinAI Demo](https://belinai.azurewebsites.net/)
+- **Demo**: [belinai.azurewebsites.net](https://belinai.azurewebsites.net/)
 
 ## 🎯 Roadmap
 
 ### v1.1 İyileştirmeler
-- [ ] Kod iyileştirme
+- [ ] Token limit ayarları
 - [ ] UI/UX iyileştirmeleri
 - [ ] Kullanıcı bildirimleri
 - [ ] Uygulama etkileşimi (beğeni, yorum sistemi)
@@ -215,6 +275,19 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - [ ] Kod versiyon takibi
 - [ ] Çoklu dil desteği
 - [ ] Proje şablonları
+- [ ] Collaborative editing
+- [ ] Advanced AI models support
+
+### Uzun Vadeli Hedefler
+- [ ] Mobile app
+- [ ] Plugin system
+- [ ] Marketplace for templates
+- [ ] AI model fine-tuning
+
 ---
 
-⭐ **BelinAI ile kodlama herkesin hakkı!** Projeyi beğendiyseniz yıldız vermeyi unutmayın!
+⭐ **BelinAI ile kodlama herkesin hakkı!** 
+
+**Projeyi beğendiyseniz yıldız vermeyi unutmayın ve daha da iyileştirmek için katkıda bulunun!**
+
+🔗 **[GitHub Repository](https://github.com/muratbaseren/Belin.AI)** | 🌐 **[Canlı Demo](https://belinai.azurewebsites.net/)**
