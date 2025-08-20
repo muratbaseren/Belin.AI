@@ -9,14 +9,23 @@
     <div class="hero-header">
         <h1>🧠 Kod Yazdır, Eğlen, Yayınla!</h1>
         <p>Tek bir satır kod yazmana gerek kalmadan, eğlenerek HTML, CSS, JavaScript ile uygulama geliştir. 🤩 Üstelik her şey yapay zekâ destekli! Bırak yapay zeka senin için kod yazsın. 🤩</p>
-        
-        <div class="pricing-info">
-            <div class="free-tier">
-                <span class="badge bg-success">🎁 Ücretsiz Başlangıç</span>
-                <p>Her yeni kullanıcı <strong>10 ücretsiz AI kullanım hakkı</strong> ile başlar!</p>
+
+        <div class="d-flex flex-row align-items-center justify-content-evenly">
+            <div class="pricing-info">
+                <div class="free-tier free-tier-blue">
+                    <span class="badge bg-info">⭐ Açık Kaynak</span>
+                    <p>Tamamen <strong>ücretsiz</strong> ve <strong>açık kaynaklı</strong> bir proje! Sende <a href="https://github.com/muratbaseren/Belin.AI" target="_blank">katkıda bulun!</a></p>
+                </div>
+            </div>
+
+            <div class="pricing-info">
+                <div class="free-tier">
+                    <span class="badge bg-success">🎁 Ücretsiz Başlangıç</span>
+                    <p>Her yeni kullanıcı <strong>10 ücretsiz AI kullanım hakkı</strong> ile başlar!</p>
+                </div>
             </div>
         </div>
-        
+
         <a href="/Account/Register" class="cta-button">🚀 Hemen Başla</a>
     </div>
 
@@ -79,6 +88,49 @@
     </div>
 </section>
 
+<!-- Yeni eklenen Open Source section -->
+<section class="open-source-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2>💻 Açık Kaynaklı ve Topluluk Odaklı</h2>
+                <p><strong>BelinAI tamamen açık kaynaklıdır!</strong> Kaynak kodlarına erişebilir, projeyi geliştirebilir ve katkıda bulunabilirsiniz.</p>
+
+                <div class="opensource-features">
+                    <div class="os-feature">
+                        <span class="os-icon">🔓</span>
+                        <strong>Tamamen Ücretsiz:</strong> Ticari kullanım dahil her türlü kullanım için ücretsiz
+                    </div>
+                    <div class="os-feature">
+                        <span class="os-icon">🤝</span>
+                        <strong>Katkıda Bulunun:</strong> Hata bildirin, özellik önerin, kod geliştirin
+                    </div>
+                    <div class="os-feature">
+                        <span class="os-icon">📖</span>
+                        <strong>Öğrenin:</strong> .NET 9, Blazor Server teknolojilerini öğrenmek için ideal
+                    </div>
+                    <div class="os-feature">
+                        <span class="os-icon">🌍</span>
+                        <strong>Topluluk:</strong> Geliştiriciler topluluğuyla birlikte büyüyen proje
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="github-card">
+                    <h5>🌟 GitHub'da Keşfedin</h5>
+                    <p>Kaynak kodlara göz atın ve projeye katkıda bulunun!</p>
+                    <a href="https://github.com/muratbaseren/Belin.AI" target="_blank" class="github-button">
+                        <i class="bi bi-github"></i> GitHub Repository
+                    </a>
+                    <div class="github-stats">
+                        <small class="text-muted">MIT License • .NET 9 • Blazor Server</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="faq-container">
     <div class="faq-header">
         <h2>💬 Sıkça Sorulan Sorular</h2>
@@ -107,11 +159,36 @@
 
         <details>
             <summary>
+                <span>Proje gerçekten tamamen ücretsiz mi?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Evet! BelinAI <strong>MIT lisansı</strong> ile açık kaynaklıdır. Kaynak kodları <a href="https://github.com/muratbaseren/Belin.AI" target="_blank">GitHub'da</a> mevcuttur. Ticari kullanım dahil her türlü kullanım için tamamen ücretsizdir. İsterseniz kendi sunucunuzda çalıştırabilirsiniz!
+            </p>
+        </details>
+
+        <details>
+            <summary>
                 <span>Gemini AI API anahtarını nasıl alabilirim?</span>
                 <span class="arrow"></span>
             </summary>
             <p>
                 Google AI Studio üzerinden (<a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>) ücretsiz Gemini API anahtarınızı alabilirsiniz. Anahtarınızı aldıktan sonra <strong>"Hesabım > Yapay Zeka"</strong> bölümünden tanımlayın ve limitsiz kullanım keyfini çıkarın! 🚀
+            </p>
+        </details>
+
+        <details>
+            <summary>
+                <span>Projeye nasıl katkıda bulunabilirim?</span>
+                <span class="arrow"></span>
+            </summary>
+            <p>
+                Harika! <a href="https://github.com/muratbaseren/Belin.AI" target="_blank">GitHub repository</a> üzerinden:
+                <br>• Hata raporlayabilirsiniz
+                <br>• Yeni özellik önerebilirsiniz
+                <br>• Kod geliştirmesine katkıda bulunabilirsiniz
+                <br>• Dokümantasyonu iyileştirebilirsiniz
+                <br>Tüm katkılar memnuniyetle karşılanır! 🤝
             </p>
         </details>
 
@@ -158,51 +235,156 @@
 </section>
 
 <style>
-.pricing-info {
-    margin: 1rem 0;
-    text-align: center;
-}
+    .pricing-info {
+        margin: 1rem 0;
+        text-align: center;
+    }
 
-.free-tier {
-    background: rgba(40, 167, 69, 0.1);
-    border: 2px solid #28a745;
-    border-radius: 10px;
-    padding: 1rem;
-    margin: 1rem auto;
-    max-width: 400px;
-}
+    .open-source-badge {
+        margin: 1rem 0;
+        text-align: center;
+    }
 
-.free-tier .badge {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
+        .open-source-badge .badge {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
 
-.free-tier p {
-    margin: 0.5rem 0 0 0;
-    color: #155724;
-    font-size: 1rem;
-}
+        .open-source-badge p {
+            margin: 0.5rem 0 0 0;
+            color: #0c5460;
+            font-size: 1rem;
+        }
 
-.feature-card.unlimited-ai {
-    border: 2px solid #ffc107;
-    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-}
+    .free-tier {
+        background: rgba(40, 167, 69, 0.1);
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem auto;
+        max-width: 400px;
+    }
 
-.api-setup-link {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.3rem 0.8rem;
-    background: #ffc107;
-    color: #212529;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
+    .free-tier-blue {
+        background: rgba(236, 245, 255, 0.8);
+        border: 2px solid #174c85;
+    }
 
-.api-setup-link:hover {
-    background: #e0a800;
-    text-decoration: none;
-    color: #212529;
-}
+    .free-tier .badge {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .free-tier p {
+        margin: 0.5rem 0 0 0;
+        color: #155724;
+        font-size: 1rem;
+    }
+
+    .feature-card.unlimited-ai {
+        border: 2px solid #ffc107;
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    }
+
+    .api-setup-link {
+        display: inline-block;
+        margin-top: 0.5rem;
+        padding: 0.3rem 0.8rem;
+        background: #ffc107;
+        color: #212529;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .api-setup-link:hover {
+            background: #e0a800;
+            text-decoration: none;
+            color: #212529;
+        }
+
+    /* Open Source Section Styles */
+    .open-source-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 4rem 0;
+        margin: 3rem 0;
+    }
+
+        .open-source-section h2 {
+            color: #495057;
+            margin-bottom: 1rem;
+        }
+
+    .opensource-features {
+        margin-top: 2rem;
+    }
+
+    .os-feature {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+    }
+
+    .os-icon {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        width: 40px;
+        text-align: center;
+    }
+
+    .github-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+
+        .github-card h5 {
+            color: #495057;
+            margin-bottom: 1rem;
+        }
+
+    .github-button {
+        display: inline-block;
+        background: #24292e;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+        .github-button:hover {
+            background: #1a1e22;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+    .github-stats {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    @@media (max-width: 768px) {
+        .open-source-section {
+            padding: 2rem 0;
+        }
+
+        .os-feature {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .os-icon {
+            margin-bottom: 0.5rem;
+            margin-right: 0;
+        }
+    }
 </style>
