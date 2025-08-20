@@ -12,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject NotifyService NotifyService
 @inject EncryptionService EncryptionService
+@inject IConfiguration Configuration
 
 <PageTitle>Yeni Kodlama</PageTitle>
 
@@ -83,7 +84,7 @@
                 }
             </div>
             <div class="chat-input d-flex">
-                <textarea id="txtUserInput" class="form-control me-2" rows="3" placeholder="Burada yapmak istediğiniz uygulamayı anlatınız." @bind="UserInput"
+                <textarea id="txtUserInput" class="form-control me-2" rows="3" max="2000" placeholder="Burada yapmak istediğiniz uygulamayı anlatınız." @bind="UserInput"
                           @onkeydown="HandleInputKeyDown"></textarea>
                 <button class="btn btn-primary" @onclick="SendMessageAsync" title="Gönder">
                     <span class="bi bi-send"></span> <span class="d-none d-sm-block">Gönder<br /><span style="font-size:7pt">CTRL+Enter</span></span>
@@ -250,6 +251,13 @@
                         new { text = prompt }
                     }
                 }
+            },
+            generationConfig = new
+            {
+                maxOutputTokens = Configuration.GetValue<string>("AISettings:MaxOutputTokens"),
+                temperature = Configuration.GetValue<string>("AISettings:Temperature"),
+                topP = Configuration.GetValue<string>("AISettings:TopP"),
+                topK = Configuration.GetValue<string>("AISettings:TopK")
             }
         };
 
