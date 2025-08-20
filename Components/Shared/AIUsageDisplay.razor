@@ -8,7 +8,7 @@
     <Authorized>
         <a href="/Account/Manage/AIOptions">
             Kalan Kullaným : <span>@aiUseCount</span>&nbsp;
-            @if(aiUseCount != "Limitsiz")
+            @if (aiUseCount != "Limitsiz")
             {
                 @:/ 10
             }
@@ -33,7 +33,7 @@
         {
             aiUseCount = currentUser.AIUseCount.ToString();
 
-            if(currentUser.UseAppAI)
+            if (currentUser.UseAppAI || (!string.IsNullOrWhiteSpace(currentUser.YzApiKey) && !string.IsNullOrWhiteSpace(currentUser.YzApiUrl)))
             {
                 aiUseCount = "Limitsiz";
             }
