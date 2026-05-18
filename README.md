@@ -7,9 +7,13 @@
 
 BelinAI, **tamamen açık kaynaklı** bir yapay zeka destekli kod üretim platformudur. Kullanıcılar hiç programlama bilgisi olmadan, doğal dil ile konuşarak HTML, CSS ve JavaScript uygulamaları oluşturabilir.
 
+
 🌟 **Bu proje topluluk odaklıdır! Katkılarınızı bekliyoruz.** 🌟
 
+
 > **💡 Proje Hikayesi**: Bu uygulama, geliştiricinin kızının yapay zeka ile kod üretirken yaşadığı "kod üret → başka platforma taşı → editör karmaşası" sorunlarını çözmek için hızlıca geliştirilmiştir. Şimdi herkesın kullanımına açık!
+
+https://github.com/user-attachments/assets/54926f64-a6d3-4825-a37c-c8bf4fbbc43b
 
 ## 🚀 Özellikler
 
